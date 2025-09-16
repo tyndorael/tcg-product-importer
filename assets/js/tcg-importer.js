@@ -63,14 +63,41 @@ jQuery(document).ready(function($) {
         searchResults.empty();
         if (cards.length > 0) {
             cards.forEach(function(card) {
-                var cardHtml = '<div class="tcg-importer-card-result" data-card-name="' + card.name + '" data-card-image="' + card.image + '" data-card-description="' + card.description + '">' +
-                                   '<img src="' + card.image + '" alt="' + card.name + '">' +
-                                   '<div>' +
-                                       '<h4>' + card.name + ' (' + card.game + ')</h4>' +
-                                       '<p><strong>Set:</strong> ' + card.set + '</p>' +
-                                       '<p><strong>Rarity:</strong> ' + card.rarity + '</p>' +
-                                   '</div>' +
-                               '</div>';
+                var image = card.image_small || card.image || '';
+                var name = card.name || '';
+                var game = card.game || '';
+                var set = card.set_name || card.set || '';
+                var rarity = card.rarity || '';
+                // Build a rich description for One Piece cards
+                var description = '';
+                if (card.game === 'One Piece TCG') {
+                    description += '<strong>Name:</strong> ' + (card.name || '') + '<br>';
+                    description += '<strong>Type:</strong> ' + (card.type || '') + '<br>';
+                    description += '<strong>Rarity:</strong> ' + (card.rarity || '') + '<br>';
+                    description += '<strong>Set:</strong> ' + (card.set_name || '') + '<br>';
+                    description += '<strong>Cost:</strong> ' + (card.cost || '') + '<br>';
+                    description += '<strong>Attribute:</strong> ' + (card.attribute_name || '') + '<br>';
+                    description += '<strong>Power:</strong> ' + (card.power || '') + '<br>';
+                    description += '<strong>Counter:</strong> ' + (card.counter || '') + '<br>';
+                    description += '<strong>Color:</strong> ' + (card.color || '') + '<br>';
+                    description += '<strong>Family:</strong> ' + (card.family || '') + '<br>';
+                    description += '<strong>Ability:</strong> ' + (card.ability || '') + '<br>';
+                    description += '<strong>Trigger:</strong> ' + (card.trigger || '') + '<br>';
+                } else {
+                    description = card.description || '';
+                }
+                var cardHtml = '<div class="tcg-importer-card-result" '
+                    + 'data-card-name="' + name + '" '
+                    + 'data-card-image="' + image + '" '
+                    + 'data-card-description="' + description.replace(/"/g, '&quot;') + '" '
+                    + '>'
+                    + '<img src="' + image + '" alt="' + name + '">' 
+                    + '<div>'
+                    + '<h4>' + name + ' (' + game + ')</h4>'
+                    + '<p><strong>Set:</strong> ' + set + '</p>'
+                    + '<p><strong>Rarity:</strong> ' + rarity + '</p>'
+                    + '</div>'
+                    + '</div>';
                 searchResults.append(cardHtml);
             });
         } else {
@@ -88,7 +115,11 @@ jQuery(document).ready(function($) {
 
         // Autocomplete the WooCommerce product fields
         $('#title').val(cardName);
-        $('#content').val(cardDescription);
+        if (typeof tinymce !== 'undefined' && tinymce.get('content') && !tinymce.get('content').hidden) {
+            tinymce.get('content').setContent(cardDescription);
+        } else {
+            $('#content').val(cardDescription);
+        }
         $('#_thumbnail_id').val(''); // Clear the existing featured image
         $('.product-image').html('<img src="' + cardImage + '" />'); // Display the new image
 

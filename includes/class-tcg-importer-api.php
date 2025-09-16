@@ -100,13 +100,25 @@ class TCG_Importer_API {
         $results = array();
         foreach ( $data['data'] as $card ) {
             $results[] = array(
-                'id'          => isset($card['id']) ? $card['id'] : '',
-                'name'        => isset($card['name']) ? $card['name'] : '',
-                'image'       => isset($card['image']) ? $card['image'] : '',
-                'description' => isset($card['ability']) ? $card['ability'] : '',
-                'set'         => isset($card['set']) ? $card['set'] : '',
-                'rarity'      => isset($card['rarity']) ? $card['rarity'] : '',
-                'game'        => 'One Piece TCG'
+                'id'              => isset($card['id']) ? $card['id'] : '',
+                'code'            => isset($card['code']) ? $card['code'] : '',
+                'rarity'          => isset($card['rarity']) ? $card['rarity'] : '',
+                'type'            => isset($card['type']) ? $card['type'] : '',
+                'name'            => isset($card['name']) ? $card['name'] : '',
+                'image_small'     => isset($card['images']['small']) ? $card['images']['small'] : '',
+                'image_large'     => isset($card['images']['large']) ? $card['images']['large'] : '',
+                'cost'            => isset($card['cost']) ? $card['cost'] : '',
+                'attribute_name'  => isset($card['attribute']['name']) ? $card['attribute']['name'] : '',
+                'attribute_image' => isset($card['attribute']['image']) ? $card['attribute']['image'] : '',
+                'power'           => isset($card['power']) ? $card['power'] : '',
+                'counter'         => isset($card['counter']) ? $card['counter'] : '',
+                'color'           => isset($card['color']) ? $card['color'] : '',
+                'family'          => isset($card['family']) ? $card['family'] : '',
+                'ability'         => isset($card['ability']) ? $card['ability'] : '',
+                'trigger'         => isset($card['trigger']) ? $card['trigger'] : '',
+                'set_name'        => isset($card['set']['name']) ? $card['set']['name'] : '',
+                'notes'           => isset($card['notes']) ? $card['notes'] : array(),
+                'game'            => 'One Piece TCG'
             );
         }
         return $results;
