@@ -84,6 +84,7 @@ jQuery(document).ready(function($) {
         var cardName = $(this).data('card-name');
         var cardImage = $(this).data('card-image');
         var cardDescription = $(this).data('card-description');
+        console.log('Selected card:', cardName, cardImage, cardDescription);
 
         // Autocomplete the WooCommerce product fields
         $('#title').val(cardName);

@@ -17,6 +17,7 @@ class TCG_Importer_Settings {
 
     public function register_settings() {
         register_setting( 'tcg_importer_settings_group', 'tcg_pokemon_api_key' );
+        register_setting( 'tcg_importer_settings_group', 'tcg_onepiece_api_key' );
     }
 
     public function render_settings_page() {
@@ -31,6 +32,12 @@ class TCG_Importer_Settings {
                         <th scope="row">Pokémon TCG API Key</th>
                         <td>
                             <input type="text" name="tcg_pokemon_api_key" value="<?php echo esc_attr( get_option('tcg_pokemon_api_key', '') ); ?>" size="50" />
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row">One Piece TCG API Key</th>
+                        <td>
+                            <input type="text" name="tcg_onepiece_api_key" value="<?php echo esc_attr( get_option('tcg_onepiece_api_key', '') ); ?>" size="50" />
                         </td>
                     </tr>
                 </table>

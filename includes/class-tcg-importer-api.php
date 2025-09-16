@@ -72,18 +72,44 @@ class TCG_Importer_API {
     }
     
     private function fetch_from_onepiece_api( $search_term ) {
-        // Simulating data for this example
-        return array(
-            array(
-                'id'          => 'op1',
-                'name'        => 'Monkey D. Luffy',
-                'image'       => 'https://images.onepiece-cardgame.com/op01/op01-001.png',
-                'description' => 'The captain of the Straw Hat Pirates...',
-                'set'         => 'Romance Dawn',
-                'rarity'      => 'Super Rare',
-                'game'        => 'One Piece TCG'
-            ),
+        $endpoint = 'https://apitcg.com/api/one-piece/cards?name=' . urlencode( $search_term );
+        $api_key = get_option( 'tcg_onepiece_api_key', '' );
+
+        $args = array(
+            'timeout' => 30
         );
+        if ( ! empty( $api_key ) ) {
+            $args['headers'] = array(
+                'x-api-key' => $api_key
+            );
+        }
+
+        $response = wp_remote_get( $endpoint, $args );
+
+        if ( is_wp_error( $response ) ) {
+            return array();
+        }
+
+        $body = wp_remote_retrieve_body( $response );
+        $data = json_decode( $body, true );
+
+        if ( empty( $data['data'] ) || !is_array( $data['data'] ) ) {
+            return array();
+        }
+
+        $results = array();
+        foreach ( $data['data'] as $card ) {
+            $results[] = array(
+                'id'          => isset($card['id']) ? $card['id'] : '',
+                'name'        => isset($card['name']) ? $card['name'] : '',
+                'image'       => isset($card['image']) ? $card['image'] : '',
+                'description' => isset($card['ability']) ? $card['ability'] : '',
+                'set'         => isset($card['set']) ? $card['set'] : '',
+                'rarity'      => isset($card['rarity']) ? $card['rarity'] : '',
+                'game'        => 'One Piece TCG'
+            );
+        }
+        return $results;
     }
 
     public function handle_image_upload() {
