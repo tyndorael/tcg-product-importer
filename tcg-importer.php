@@ -19,6 +19,7 @@ define( 'MY_TCG_IMPORTER_URL', plugin_dir_url( __FILE__ ) );
 // Include necessary classes and files
 require_once MY_TCG_IMPORTER_PATH . 'includes/class-tcg-importer-api.php';
 require_once MY_TCG_IMPORTER_PATH . 'includes/class-tcg-importer-metabox.php';
+require_once MY_TCG_IMPORTER_PATH . 'includes/class-tcg-importer-settings.php';
 
 // Initialize the plugin's classes
 function my_tcg_importer_init() {

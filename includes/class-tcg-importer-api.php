@@ -31,21 +31,44 @@ class TCG_Importer_API {
     }
 
     private function fetch_from_pokemon_api( $search_term ) {
-        // In a real-world scenario, you would use wp_remote_get() to make the API call.
-        // Example endpoint: https://api.pokemontcg.io/v2/cards?q=name:Pikachu
-        
-        // Simulating data for this example
-        return array(
-            array(
-                'id'          => 'pok1',
-                'name'        => 'Pikachu',
-                'image'       => 'https://images.pokemontcg.io/base1/1.png',
-                'description' => 'A cute electric mouse Pokémon...',
-                'set'         => 'Base Set',
-                'rarity'      => 'Common',
-                'game'        => 'Pokemon TCG'
-            ),
+        $endpoint = 'https://api.pokemontcg.io/v2/cards?q=name:' . urlencode( $search_term );
+        $api_key = get_option( 'tcg_pokemon_api_key', '' );
+
+        $args = array(
+            'timeout' => 30
         );
+        if ( ! empty( $api_key ) ) {
+            $args['headers'] = array(
+                'X-Api-Key' => $api_key
+            );
+        }
+
+        $response = wp_remote_get( $endpoint, $args );
+
+        if ( is_wp_error( $response ) ) {
+            return array();
+        }
+
+        $body = wp_remote_retrieve_body( $response );
+        $data = json_decode( $body, true );
+
+        if ( empty( $data['data'] ) || !is_array( $data['data'] ) ) {
+            return array();
+        }
+
+        $results = array();
+        foreach ( $data['data'] as $card ) {
+            $results[] = array(
+                'id'          => isset($card['id']) ? $card['id'] : '',
+                'name'        => isset($card['name']) ? $card['name'] : '',
+                'image'       => isset($card['images']['small']) ? $card['images']['small'] : '',
+                'description' => isset($card['flavorText']) ? $card['flavorText'] : '',
+                'set'         => isset($card['set']['name']) ? $card['set']['name'] : '',
+                'rarity'      => isset($card['rarity']) ? $card['rarity'] : '',
+                'game'        => 'Pokemon TCG'
+            );
+        }
+        return $results;
     }
     
     private function fetch_from_onepiece_api( $search_term ) {
