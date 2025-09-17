@@ -32,11 +32,13 @@ class TCG_Importer_API {
             wp_send_json_error( 'Failed to download image: ' . $tmp->get_error_message() );
         }
 
-        // Check file type
+        // Check file type and mime type
         $filetype = wp_check_filetype( basename( $image_url ) );
-        if ( empty( $filetype['type'] ) ) {
+        $mime_type = mime_content_type( $tmp );
+        $allowed_mimes = array( 'image/jpeg', 'image/png', 'image/gif', 'image/webp' );
+        if ( empty( $filetype['type'] ) || !in_array( $mime_type, $allowed_mimes ) ) {
             @unlink( $tmp );
-            wp_send_json_error( 'Downloaded file is not a valid image.' );
+            wp_send_json_error( 'Downloaded file is not a valid image. Detected mime type: ' . $mime_type );
         }
 
         // Get the file name and type
@@ -55,7 +57,7 @@ class TCG_Importer_API {
         // Clean up temp file
         @unlink( $tmp );
 
-        wp_send_json_success( array( 'attachment_id' => $attachment_id ) );
+        wp_send_json_success( array( 'attachment_id' => $attachment_id, 'mime_type' => $mime_type ) );
     }
 
     public function search_cards_callback() {
