@@ -111,7 +111,10 @@ jQuery(document).ready(function($) {
         var cardName = $(this).data('card-name');
         var cardImage = $(this).data('card-image');
         var cardDescription = $(this).data('card-description');
-        console.log('Selected card:', cardName, cardImage, cardDescription);
+
+        console.log('name:', cardName);
+        console.log('image:', cardImage);
+        console.log('description:', cardDescription);
 
         // Autocomplete the WooCommerce product fields
         $('#title').trigger('focus').val(cardName).trigger('change');
@@ -123,10 +126,30 @@ jQuery(document).ready(function($) {
         $('#_thumbnail_id').val(''); // Clear the existing featured image
         $('.product-image').html('<img src="' + cardImage + '" />'); // Display the new image
 
+        // AJAX call to upload image from URL and set as featured image
+        $.ajax({
+            url: tcg_importer_data.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'tcg_upload_card_image',
+                image_url: cardImage,
+                nonce: tcg_importer_data.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Optionally update the UI with the new featured image ID
+                    $('#_thumbnail_id').val(response.data.attachment_id);
+                    console.log('Image uploaded and set as featured image.');
+                } else {
+                    alert('Image upload AJAX error: ' + (response.data ? response.data : 'Unknown error'));
+                }
+            },
+            error: function(xhr, status, error) {
+                alert('Image upload AJAX error: ' + error);
+            }
+        });
+
         // Close the modal
         modal.hide();
-
-        // Note: For a real plugin, you'd also need an AJAX call to upload the image
-        // to the WordPress Media Library and set it as the product's featured image.
     });
 });

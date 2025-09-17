@@ -4,6 +4,58 @@ class TCG_Importer_API {
     public function __construct() {
         // AJAX hook to handle card search
         add_action( 'wp_ajax_tcg_search_cards', array( $this, 'search_cards_callback' ) );
+        // AJAX hook to handle image upload from URL
+        add_action( 'wp_ajax_tcg_upload_card_image', array( $this, 'upload_card_image_callback' ) );
+    }
+    
+    /**
+     * AJAX callback to upload image from URL and set as featured image
+     */
+    public function upload_card_image_callback() {
+        check_ajax_referer( 'tcg_importer_nonce', 'nonce' );
+
+        $image_url = isset( $_POST['image_url'] ) ? esc_url_raw( $_POST['image_url'] ) : '';
+        if ( empty( $image_url ) ) {
+            wp_send_json_error( 'Image URL not provided.' );
+        }
+
+        // Validate file extension
+        $allowed_extensions = array( 'jpg', 'jpeg', 'png', 'gif', 'webp' );
+        $ext = strtolower( pathinfo( parse_url( $image_url, PHP_URL_PATH ), PATHINFO_EXTENSION ) );
+        if ( ! in_array( $ext, $allowed_extensions ) ) {
+            wp_send_json_error( 'Invalid image file type: ' . $ext );
+        }
+
+        // Download image to temp location
+        $tmp = download_url( $image_url );
+        if ( is_wp_error( $tmp ) ) {
+            wp_send_json_error( 'Failed to download image: ' . $tmp->get_error_message() );
+        }
+
+        // Check file type
+        $filetype = wp_check_filetype( basename( $image_url ) );
+        if ( empty( $filetype['type'] ) ) {
+            @unlink( $tmp );
+            wp_send_json_error( 'Downloaded file is not a valid image.' );
+        }
+
+        // Get the file name and type
+        $file_array = array();
+        $file_array['name'] = basename( $image_url );
+        $file_array['tmp_name'] = $tmp;
+
+        // Upload to media library
+        $attachment_id = media_handle_sideload( $file_array, 0 );
+        if ( is_wp_error( $attachment_id ) ) {
+            $error_message = $attachment_id->get_error_message();
+            @unlink( $tmp );
+            wp_send_json_error( 'Failed to upload image: ' . $error_message );
+        }
+
+        // Clean up temp file
+        @unlink( $tmp );
+
+        wp_send_json_success( array( 'attachment_id' => $attachment_id ) );
     }
 
     public function search_cards_callback() {
