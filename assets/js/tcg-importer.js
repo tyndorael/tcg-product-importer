@@ -114,7 +114,7 @@ jQuery(document).ready(function($) {
         console.log('Selected card:', cardName, cardImage, cardDescription);
 
         // Autocomplete the WooCommerce product fields
-        $('#title').val(cardName);
+        $('#title').trigger('focus').val(cardName).trigger('change');
         if (typeof tinymce !== 'undefined' && tinymce.get('content') && !tinymce.get('content').hidden) {
             tinymce.get('content').setContent(cardDescription);
         } else {
