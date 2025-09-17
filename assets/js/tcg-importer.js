@@ -126,6 +126,9 @@ jQuery(document).ready(function($) {
         $('#_thumbnail_id').val(''); // Clear the existing featured image
         $('.product-image').html('<img src="' + cardImage + '" />'); // Display the new image
 
+        // Get product ID from the product edit page
+        var productId = $('#post_ID').val();
+
         // AJAX call to upload image from URL and set as featured image
         $.ajax({
             url: tcg_importer_data.ajax_url,
@@ -133,13 +136,13 @@ jQuery(document).ready(function($) {
             data: {
                 action: 'tcg_upload_card_image',
                 image_url: cardImage,
+                product_id: productId,
                 nonce: tcg_importer_data.nonce
             },
             success: function(response) {
                 if (response.success) {
-                    // Optionally update the UI with the new featured image ID
                     $('#_thumbnail_id').val(response.data.attachment_id);
-                    console.log('Image uploaded and set as featured image.');
+                    console.log('Image uploaded and set as featured image for product:', productId);
                 } else {
                     alert('Image upload AJAX error: ' + (response.data ? response.data : 'Unknown error'));
                 }

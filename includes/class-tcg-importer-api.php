@@ -66,10 +66,18 @@ class TCG_Importer_API {
             wp_send_json_error( 'Failed to upload image: ' . $error_message . ', file size: ' . $file_size . ', path: ' . $file_path . ', used name: ' . $file_name );
         }
 
+        // Get product ID from AJAX
+        $product_id = isset( $_POST['product_id'] ) ? intval( $_POST['product_id'] ) : 0;
+
+        // Set as product featured image if product_id is provided
+        if ( $product_id > 0 ) {
+            update_post_meta( $product_id, '_thumbnail_id', $attachment_id );
+        }
+
         // Clean up temp file
         @unlink( $tmp );
 
-        wp_send_json_success( array( 'attachment_id' => $attachment_id, 'mime_type' => $mime_type, 'file_size' => $file_size, 'file_path' => $file_path, 'used_name' => $file_name ) );
+        wp_send_json_success( array( 'attachment_id' => $attachment_id, 'mime_type' => $mime_type, 'file_size' => $file_size, 'file_path' => $file_path, 'used_name' => $file_name, 'product_id' => $product_id ) );
     }
 
     public function search_cards_callback() {
