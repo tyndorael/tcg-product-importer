@@ -35,29 +35,41 @@ class TCG_Importer_API {
         // Check file type and mime type
         $filetype = wp_check_filetype( basename( $image_url ) );
         $mime_type = mime_content_type( $tmp );
+        $file_size = file_exists($tmp) ? filesize($tmp) : 0;
+        $file_path = $tmp;
+
+        // Get WordPress allowed mime types
+        $wp_mimes = wp_get_mime_types();
         $allowed_mimes = array( 'image/jpeg', 'image/png', 'image/gif', 'image/webp' );
+        $filetype = wp_check_filetype( $file_path, $wp_mimes );
+        $mime_type = mime_content_type( $tmp );
+        $file_size = file_exists($tmp) ? filesize($tmp) : 0;
+        $file_path = $tmp;
+        $actual_ext = strtolower( pathinfo( $file_path, PATHINFO_EXTENSION ) );
+        $file_name = 'imported-image.' . $actual_ext;
         if ( empty( $filetype['type'] ) || !in_array( $mime_type, $allowed_mimes ) ) {
             @unlink( $tmp );
-            wp_send_json_error( 'Downloaded file is not a valid image. Detected mime type: ' . $mime_type );
+            wp_send_json_error( 'Downloaded file is not a valid image. Detected mime type: ' . $mime_type . ', file size: ' . $file_size . ', path: ' . $file_path . ', used name: ' . $file_name );
         }
 
         // Get the file name and type
         $file_array = array();
-        $file_array['name'] = basename( $image_url );
+        $file_array['name'] = $file_name;
         $file_array['tmp_name'] = $tmp;
+        $file_array['type'] = $mime_type;
 
         // Upload to media library
         $attachment_id = media_handle_sideload( $file_array, 0 );
         if ( is_wp_error( $attachment_id ) ) {
             $error_message = $attachment_id->get_error_message();
             @unlink( $tmp );
-            wp_send_json_error( 'Failed to upload image: ' . $error_message );
+            wp_send_json_error( 'Failed to upload image: ' . $error_message . ', file size: ' . $file_size . ', path: ' . $file_path . ', used name: ' . $file_name );
         }
 
         // Clean up temp file
         @unlink( $tmp );
 
-        wp_send_json_success( array( 'attachment_id' => $attachment_id, 'mime_type' => $mime_type ) );
+        wp_send_json_success( array( 'attachment_id' => $attachment_id, 'mime_type' => $mime_type, 'file_size' => $file_size, 'file_path' => $file_path, 'used_name' => $file_name ) );
     }
 
     public function search_cards_callback() {
