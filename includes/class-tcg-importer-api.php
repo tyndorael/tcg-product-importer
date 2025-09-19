@@ -89,13 +89,20 @@ class TCG_Importer_API {
             wp_send_json_error( 'Search term not provided.' );
         }
 
-        // Fetch data from Pokémon TCG and One Piece TCG APIs.
-        // For simplicity, we are simulating the API response here.
-        $pokemon_data = $this->fetch_from_pokemon_api( $search_term );
-        $onepiece_data = $this->fetch_from_onepiece_api( $search_term );
+        $game = isset( $_POST['game'] ) ? sanitize_text_field( $_POST['game'] ) : '';
 
-        // Combine the results from both APIs
-        $results = array_merge( $pokemon_data, $onepiece_data );
+        // Fetch data from the selected API only
+        $results = array();
+        if ( $game === 'pokemon' ) {
+            $results = $this->fetch_from_pokemon_api( $search_term );
+        } elseif ( $game === 'onepiece' ) {
+            $results = $this->fetch_from_onepiece_api( $search_term );
+        } else {
+            // Default: search both
+            $pokemon_data = $this->fetch_from_pokemon_api( $search_term );
+            $onepiece_data = $this->fetch_from_onepiece_api( $search_term );
+            $results = array_merge( $pokemon_data, $onepiece_data );
+        }
 
         if ( ! empty( $results ) ) {
             wp_send_json_success( $results );

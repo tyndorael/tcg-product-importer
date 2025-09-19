@@ -7,7 +7,8 @@
         <h2>Search for a Card</h2>
         <div class="search-form">
             <input type="text" id="tcg-search-input" placeholder="Card name...">
-            <button id="tcg-search-button" class="button button-secondary">Search</button>
+            <button id="tcg-search-pokemon" class="button button-secondary" type="button">Search Pokémon</button>
+            <button id="tcg-search-onepiece" class="button button-secondary" type="button">Search One Piece</button>
         </div>
         <div id="tcg-search-results">
             </div>

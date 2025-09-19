@@ -6,6 +6,8 @@ jQuery(document).ready(function($) {
     var searchButton = $('#tcg-search-button');
     var searchInput = $('#tcg-search-input');
     var searchResults = $('#tcg-search-results');
+    var searchPokemonButton = $('#tcg-search-pokemon');
+    var searchOnePieceButton = $('#tcg-search-onepiece');
 
     // Open the modal
     button.on('click', function() {
@@ -44,6 +46,74 @@ jQuery(document).ready(function($) {
             },
             beforeSend: function() {
                 searchResults.html('Searching...');
+            },
+            success: function(response) {
+                if (response.success) {
+                    displayResults(response.data);
+                } else {
+                    searchResults.html('<p>No results found.</p>');
+                }
+            },
+            error: function() {
+                searchResults.html('<p>An error occurred while searching. Please try again.</p>');
+            }
+        });
+    });
+
+    // Handle Pokémon card search
+    searchPokemonButton.on('click', function(e) {
+        console.log('Pokémon search button clicked');
+        e.preventDefault();
+        var searchTerm = searchInput.val();
+        if (searchTerm.length < 3) {
+            alert('Please enter at least 3 characters.');
+            return;
+        }
+        $.ajax({
+            url: tcg_importer_data.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'tcg_search_cards',
+                search_term: searchTerm,
+                game: 'pokemon',
+                nonce: tcg_importer_data.nonce
+            },
+            beforeSend: function() {
+                searchResults.html('Searching Pokémon...');
+            },
+            success: function(response) {
+                if (response.success) {
+                    displayResults(response.data);
+                } else {
+                    searchResults.html('<p>No results found.</p>');
+                }
+            },
+            error: function() {
+                searchResults.html('<p>An error occurred while searching. Please try again.</p>');
+            }
+        });
+    });
+
+    // Handle One Piece card search
+    searchOnePieceButton.on('click', function(e) {
+        console.log('One Piece search button clicked');
+        e.preventDefault();
+        var searchTerm = searchInput.val();
+        if (searchTerm.length < 3) {
+            alert('Please enter at least 3 characters.');
+            return;
+        }
+        $.ajax({
+            url: tcg_importer_data.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'tcg_search_cards',
+                search_term: searchTerm,
+                game: 'onepiece',
+                nonce: tcg_importer_data.nonce
+            },
+            beforeSend: function() {
+                searchResults.html('Searching One Piece...');
             },
             success: function(response) {
                 if (response.success) {
