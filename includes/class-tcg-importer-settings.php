@@ -29,13 +29,19 @@ class TCG_Importer_Settings {
                 <?php do_settings_sections( 'tcg_importer_settings_group' ); ?>
                 <table class="form-table">
                     <tr valign="top">
-                        <th scope="row">Pokémon TCG API Key</th>
+                        <th scope="row">Pokémon TCG API Key
+                            <p class="description">Enter your Pokémon TCG API key here.</p>
+                            Documentation: <a href="https://pokemontcg.io/" target="_blank" rel="noopener noreferrer">https://pokemontcg.io/</a>
+                        </th>
                         <td>
                             <input type="text" name="tcg_pokemon_api_key" value="<?php echo esc_attr( get_option('tcg_pokemon_api_key', '') ); ?>" size="50" />
                         </td>
                     </tr>
                     <tr valign="top">
-                        <th scope="row">One Piece TCG API Key</th>
+                        <th scope="row">One Piece TCG API Key
+                            <p class="description">Enter your One Piece TCG API key here.</p>
+                            Documentation: <a href="https://www.apitcg.com/platform" target="_blank" rel="noopener noreferrer">https://www.apitcg.com/platform</a>
+                        </th>
                         <td>
                             <input type="text" name="tcg_onepiece_api_key" value="<?php echo esc_attr( get_option('tcg_onepiece_api_key', '') ); ?>" size="50" />
                         </td>

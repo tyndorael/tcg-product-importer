@@ -136,6 +136,7 @@ jQuery(document).ready(function($) {
                 var image = card.image_small || card.image || '';
                 var name = card.name || '';
                 var game = card.game || '';
+                var code = card.code || '';
                 var set = card.set_name || card.set || '';
                 var rarity = card.rarity || '';
                 // Build a rich description for One Piece cards
@@ -158,6 +159,7 @@ jQuery(document).ready(function($) {
                 }
                 var cardHtml = '<div class="tcg-importer-card-result" '
                     + 'data-card-name="' + name + '" '
+                    + 'data-product-name="' + name + ' ' + code + '" '
                     + 'data-card-image="' + image + '" '
                     + 'data-card-description="' + description.replace(/"/g, '&quot;') + '" '
                     + '>'
@@ -179,6 +181,7 @@ jQuery(document).ready(function($) {
     searchResults.on('click', '.tcg-importer-card-result', function() {
         // Get card data from the clicked element's data attributes
         var cardName = $(this).data('card-name');
+        var productName = $(this).data('product-name');
         var cardImage = $(this).data('card-image');
         var cardDescription = $(this).data('card-description');
 
@@ -187,7 +190,7 @@ jQuery(document).ready(function($) {
         console.log('description:', cardDescription);
 
         // Autocomplete the WooCommerce product fields
-        $('#title').trigger('focus').val(cardName).trigger('change');
+        $('#title').trigger('focus').val(productName).trigger('change');
         if (typeof tinymce !== 'undefined' && tinymce.get('content') && !tinymce.get('content').hidden) {
             tinymce.get('content').setContent(cardDescription);
         } else {
